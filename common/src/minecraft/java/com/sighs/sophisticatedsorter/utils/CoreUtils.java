@@ -18,7 +18,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.p3pp3rf1y.sophisticatedcore.common.gui.SettingsContainerMenu;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SortBy;
+import net.p3pp3rf1y.sophisticatedcore.common.gui.StorageContainerMenuBase;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 import net.p3pp3rf1y.sophisticatedcore.util.InventorySorter;
 
@@ -63,11 +65,27 @@ public final class CoreUtils {
     }
 
     public static void executeSort(Player player, SortRequest request) {
+        if (isSophisticatedMenu(player)) {
+            return;
+        }
         sorter().sort(player, request);
     }
 
     public static void executeTransfer(Player player, TransferRequest request) {
+        if (isSophisticatedMenu(player)) {
+            return;
+        }
         sorter().transfer(player, request);
+    }
+
+    /**
+     * 精妙背包 / 精妙储存的容器菜单由精妙自己管理排序，且支持高堆叠（堆叠升级）；
+     * 本模组的通用排序会把高堆叠压回原版一组，格数不足时还会丢失溢出物品，因此必须完全跳过。
+     * 这是服务端纵深防御：即使客户端（版本差异或第三方客户端）未拦截，服务端也不会误排精妙容器。
+     */
+    private static boolean isSophisticatedMenu(Player player) {
+        AbstractContainerMenu menu = player.containerMenu;
+        return menu instanceof StorageContainerMenuBase || menu instanceof SettingsContainerMenu;
     }
 
     private static SorterService<Player, ItemStack, Item> sorter() {
@@ -118,6 +136,33 @@ public final class CoreUtils {
         }
 
         @Override
+        public boolean moveIntoPlayerInventory(Player player, int slotIndex, boolean mainInventoryFirst) {
+            AbstractContainerMenu menu = player.containerMenu;
+            Slot source = menu.slots.get(slotIndex);
+            if (source.getItem().isEmpty()) {
+                return false;
+            }
+            int playerStart = playerInventoryBlockStart(menu, player.getInventory());
+            if (playerStart < 0) {
+                // Unrecognized layout: fall back to vanilla quick move (hotbar first).
+                quickMove(player, slotIndex);
+                return true;
+            }
+            // The player block is laid out [27 main inventory][9 hotbar], so reverse=false fills the
+            // main inventory first and reverse=true fills the hotbar first. Vanilla quickMoveStack
+            // uses the latter; Core's own transfer fills the main inventory first.
+            ItemStack stack = source.getItem();
+            boolean moved = ((AbstractContainerMenuAccessor) menu).sophisticatedSorter$moveItemStackTo(
+                    stack, playerStart, menu.slots.size(), !mainInventoryFirst);
+            if (stack.isEmpty()) {
+                source.setByPlayer(ItemStack.EMPTY);
+            } else if (moved) {
+                source.setChanged();
+            }
+            return moved;
+        }
+
+        @Override
         public void broadcastChanges(Player player) {
             player.containerMenu.broadcastChanges();
         }
@@ -129,6 +174,33 @@ public final class CoreUtils {
             throw new IllegalStateException("CoreUtils platform has not been installed");
         }
         return current;
+    }
+
+    /**
+     * Index of the menu's trailing 36-slot player block, or -1 when the menu does not expose the
+     * standard layout. The block must be the last 36 slots, all backed by the player inventory, with
+     * the 27 main-inventory slots (container index 9-35) first and the 9 hotbar slots (0-8) last -
+     * the order the transfer order flag relies on.
+     */
+    private static int playerInventoryBlockStart(AbstractContainerMenu menu, Inventory inventory) {
+        int size = menu.slots.size();
+        if (size < 36) {
+            return -1;
+        }
+        int start = size - 36;
+        for (int i = 0; i < 36; i++) {
+            Slot slot = menu.slots.get(start + i);
+            if (slot.container != inventory) {
+                return -1;
+            }
+            int containerSlot = slot.getContainerSlot();
+            boolean mainSlot = containerSlot >= 9 && containerSlot <= 35;
+            boolean hotbarSlot = containerSlot >= 0 && containerSlot <= 8;
+            if (i < 27 ? !mainSlot : !hotbarSlot) {
+                return -1;
+            }
+        }
+        return start;
     }
 
     private static final class MinecraftSortSlot implements SortSlot<ItemStack, Item> {

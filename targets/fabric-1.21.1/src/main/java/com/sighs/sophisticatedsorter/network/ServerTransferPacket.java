@@ -11,9 +11,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 /** Fabric 1.21.1 C2S transfer payload. */
-public record ServerTransferPacket(boolean toContainer, boolean filterByDestination) implements CustomPacketPayload {
+public record ServerTransferPacket(boolean toContainer, boolean filterByDestination, boolean mainInventoryFirst) implements CustomPacketPayload {
     public ServerTransferPacket(TransferRequest request) {
-        this(request.toContainer(), request.filterByDestination());
+        this(request.toContainer(), request.filterByDestination(), request.mainInventoryFirst());
     }
 
     public static final Type<ServerTransferPacket> TYPE = new Type<>(
@@ -21,10 +21,12 @@ public record ServerTransferPacket(boolean toContainer, boolean filterByDestinat
     public static final StreamCodec<ByteBuf, ServerTransferPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL, ServerTransferPacket::toContainer,
             ByteBufCodecs.BOOL, ServerTransferPacket::filterByDestination,
+            ByteBufCodecs.BOOL, ServerTransferPacket::mainInventoryFirst,
             ServerTransferPacket::new);
 
     public void handle(ServerPlayer player) {
-        FabricSorterCommands.INSTANCE.transfer(player, new TransferRequest(toContainer, filterByDestination));
+        FabricSorterCommands.INSTANCE.transfer(player,
+                new TransferRequest(toContainer, filterByDestination, mainInventoryFirst));
     }
 
     @Override

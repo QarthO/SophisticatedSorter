@@ -46,9 +46,12 @@ public final class SearchBoxMixin implements SearchBoxPositionAccess {
     private void sophisticatedSorter$appendTooltipHint(
             GuiGraphicsExtractor graphics, Font font, List<Component> tooltip,
             Optional<TooltipComponent> component, int mouseX, int mouseY) {
-        graphics.setTooltipForNextFrame(font,
-                com.sighs.sophisticatedsorter.event.ScreenInit.appendTooltipHint(tooltip),
-                component, mouseX, mouseY);
+        // 本模组对精妙背包 / 精妙储存完全失效，其自带搜索框上不再追加本模组的拖动提示。
+        List<Component> result = com.sighs.sophisticatedsorter.utils.ClientUtils
+                .isSophisticatedScreen(Minecraft.getInstance().screen)
+                ? tooltip
+                : com.sighs.sophisticatedsorter.event.ScreenInit.appendTooltipHint(tooltip);
+        graphics.setTooltipForNextFrame(font, result, component, mouseX, mouseY);
     }
 
     @Override

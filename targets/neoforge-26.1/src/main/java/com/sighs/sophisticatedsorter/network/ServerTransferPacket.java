@@ -11,9 +11,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record ServerTransferPacket(boolean transferToContainer, boolean filter) implements CustomPacketPayload {
+public record ServerTransferPacket(boolean transferToContainer, boolean filter, boolean mainInventoryFirst) implements CustomPacketPayload {
     public ServerTransferPacket(TransferRequest request) {
-        this(request.toContainer(), request.filterByDestination());
+        this(request.toContainer(), request.filterByDestination(), request.mainInventoryFirst());
     }
 
     public static final Identifier ID = Identifier.fromNamespaceAndPath(SophisticatedSorter.MODID, "server_transfer");
@@ -24,12 +24,15 @@ public record ServerTransferPacket(boolean transferToContainer, boolean filter) 
             ServerTransferPacket::transferToContainer,
             ByteBufCodecs.BOOL,
             ServerTransferPacket::filter,
+            ByteBufCodecs.BOOL,
+            ServerTransferPacket::mainInventoryFirst,
             ServerTransferPacket::new
     );
 
     public static void execute(ServerTransferPacket msg, IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
-        NeoForgeSorterCommands.INSTANCE.transfer(player, new TransferRequest(msg.transferToContainer, msg.filter));
+        NeoForgeSorterCommands.INSTANCE.transfer(player,
+                new TransferRequest(msg.transferToContainer, msg.filter, msg.mainInventoryFirst));
     }
 
     @Override

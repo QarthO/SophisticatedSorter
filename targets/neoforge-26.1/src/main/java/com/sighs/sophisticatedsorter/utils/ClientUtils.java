@@ -16,6 +16,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SortBy;
+import net.p3pp3rf1y.sophisticatedcore.client.gui.SettingsScreen;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.TextBox;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Dimension;
@@ -90,6 +91,11 @@ public final class ClientUtils {
     }
 
     public static void serverSort() {
+        // 精妙背包 / 精妙储存的界面（含其设置界面）的排序由精妙自身处理，
+        // 本模组在此类屏幕上完全失效（既不发送排序请求，也不委托精妙）。
+        if (isSophisticatedScreen(Minecraft.getInstance().screen)) {
+            return;
+        }
         if (Minecraft.getInstance().screen instanceof AbstractContainerScreen<?>) {
             SortBy sortBy = getSortBy();
             SortRequest request = SortRequestFactory.forScreen(
@@ -99,7 +105,20 @@ public final class ClientUtils {
     }
 
     public static void serverTransfer(boolean transferToContainer, boolean filter) {
-        platform().sendTransfer(new TransferRequest(transferToContainer, filter));
+        if (isSophisticatedScreen(Minecraft.getInstance().screen)) {
+            return;
+        }
+        platform().sendTransfer(new TransferRequest(transferToContainer, filter,
+                platform().isTransferMainInventoryFirst()));
+    }
+
+    /**
+     * 当前屏幕是否属于精妙背包 / 精妙储存。二者的主界面继承 {@link StorageScreenBase}，
+     * 设置界面继承 {@link SettingsScreen}（不再继承 {@code StorageScreenBase}），两类都要排除。
+     * 供按键入口与本类的排序/转移入口共用，保证所有功能对精妙界面一律失效。
+     */
+    public static boolean isSophisticatedScreen(Screen screen) {
+        return screen instanceof StorageScreenBase || screen instanceof SettingsScreen;
     }
 
     public static SortBy getSortBy() {

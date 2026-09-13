@@ -23,6 +23,13 @@ public class Config {
     public static ModConfigSpec.ConfigValue<List<? extends String>> BUTTON_POSITIONS;
 
     /**
+     * When transferring container items into the player inventory, whether the 27-slot main
+     * inventory is filled before the 9-slot hotbar ({@code true}, matching Sophisticated Core's own
+     * transfer) or the hotbar is filled first ({@code false}, matching vanilla quick-move).
+     */
+    public static ModConfigSpec.BooleanValue TRANSFER_MAIN_INVENTORY_FIRST;
+
+    /**
      * Server-side config that hosts the Sophisticated Core {@link StackUpgradeConfig}. Core's
      * {@code InventoryHandler} asks its stack-upgrade config for item stack limits whenever the
      * handler has real slots, and {@code StackUpgradeConfig.canStackItem} only returns safely when
@@ -60,6 +67,12 @@ public class Config {
                         List.of(),
                         entry -> entry instanceof String
                 );
+
+        TRANSFER_MAIN_INVENTORY_FIRST = BUILDER
+                .comment("When transferring container items into the player inventory, fill the 27-slot "
+                        + "main inventory before the 9-slot hotbar (true, like Sophisticated Core) or the "
+                        + "hotbar first (false, like vanilla quick-move).")
+                .define("transferMainInventoryFirst", true);
 
         SPEC = BUILDER.build();
 

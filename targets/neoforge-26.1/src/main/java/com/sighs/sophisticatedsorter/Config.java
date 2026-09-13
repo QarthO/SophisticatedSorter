@@ -5,7 +5,6 @@ import java.util.List;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.stack.StackUpgradeConfig;
 import com.sighs.sophisticatedsorter.common.ScreenId;
-
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
 // Demonstrates how to use Neo's config APIs
 public class Config {
@@ -25,6 +24,13 @@ public class Config {
      * ordinary slots (only the placement guard keeps non-matching items out).
      */
     public static ModConfigSpec.BooleanValue MEMORY_SLOT_SORTING;
+
+    /**
+     * When transferring container items into the player inventory, whether the 27-slot main
+     * inventory is filled before the 9-slot hotbar ({@code true}, matching Sophisticated Core's own
+     * transfer) or the hotbar is filled first ({@code false}, matching vanilla quick-move).
+     */
+    public static ModConfigSpec.BooleanValue TRANSFER_MAIN_INVENTORY_FIRST;
 
     /**
      * Server-side config that hosts the Sophisticated Core {@link StackUpgradeConfig}. Core's
@@ -66,6 +72,12 @@ public class Config {
                 .comment("When true (default) sorting puts each memorized slot's remembered item into that slot, "
                         + "matching the pre-26.1 behavior; set to false to sort memory slots like ordinary slots.")
                 .define("memorySlotSorting", true);
+
+        TRANSFER_MAIN_INVENTORY_FIRST = BUILDER
+                .comment("When transferring container items into the player inventory, fill the 27-slot "
+                        + "main inventory before the 9-slot hotbar (true, like Sophisticated Core) or the "
+                        + "hotbar first (false, like vanilla quick-move).")
+                .define("transferMainInventoryFirst", true);
 
         SPEC = BUILDER.build();
 

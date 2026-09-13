@@ -1,6 +1,7 @@
 package com.sighs.sophisticatedsorter.mixin;
 
 import com.sighs.sophisticatedsorter.common.StorageScreenPolicy;
+import com.sighs.sophisticatedsorter.utils.ClientUtils;
 import com.sighs.sophisticatedsorter.utils.SearchBoxPositionAccess;
 import com.sighs.sophisticatedsorter.utils.TooltipHints;
 import net.minecraft.client.Minecraft;
@@ -40,7 +41,11 @@ public class SearchBoxMixin implements SearchBoxPositionAccess {
             remap = true)
     private void appendTooltipHint(GuiGraphics guiGraphics, Font font, List<Component> tooltip,
                                    Optional<TooltipComponent> component, int mouseX, int mouseY) {
-        guiGraphics.renderTooltip(font, TooltipHints.appendTooltipHint(tooltip), component, mouseX, mouseY);
+        // 本模组对精妙背包 / 精妙储存完全失效，其自带搜索框上不再追加本模组的拖动提示。
+        List<Component> result = ClientUtils.isSophisticatedScreen(Minecraft.getInstance().screen)
+                ? tooltip
+                : TooltipHints.appendTooltipHint(tooltip);
+        guiGraphics.renderTooltip(font, result, component, mouseX, mouseY);
     }
 
     @Override

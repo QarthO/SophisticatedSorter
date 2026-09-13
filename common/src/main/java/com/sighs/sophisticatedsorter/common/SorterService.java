@@ -58,7 +58,11 @@ public final class SorterService<P, S, I> {
         }
         for (SortSlot<S, I> slot : transferSlots) {
             if (!filterByDestination || destinationItems.contains(slot.item())) {
-                backend.quickMove(player, slot.index());
+                if (toContainer) {
+                    backend.quickMove(player, slot.index());
+                } else {
+                    backend.moveIntoPlayerInventory(player, slot.index(), request.mainInventoryFirst());
+                }
             }
         }
         backend.broadcastChanges(player);

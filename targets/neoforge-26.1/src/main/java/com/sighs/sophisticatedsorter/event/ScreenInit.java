@@ -23,7 +23,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.SortButtonsPosition;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.Button;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ButtonDefinition;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ButtonDefinitions;
@@ -98,7 +97,7 @@ public final class ScreenInit {
     public static void addSorterControls(ScreenEvent.Init.Post event) {
         if (!(event.getScreen() instanceof AbstractContainerScreen<?> screen)
                 || screen instanceof CreativeModeInventoryScreen
-                || screen instanceof StorageScreenBase<?>
+                || ClientUtils.isSophisticatedScreen(screen)
                 || !isSortableScreen(screen)
                 || STATES.containsKey(screen)
                 || net.p3pp3rf1y.sophisticatedcore.Config.CLIENT.sortButtonsPosition.get()
@@ -266,7 +265,7 @@ public final class ScreenInit {
         State state = STATES.get(screen);
         if (state == null) {
             if (!(screen instanceof CreativeModeInventoryScreen)
-                    && !(screen instanceof StorageScreenBase<?>)
+                    && !ClientUtils.isSophisticatedScreen(screen)
                     && net.p3pp3rf1y.sophisticatedcore.Config.CLIENT.sortButtonsPosition.get()
                     != SortButtonsPosition.HIDDEN
                     && isSortableScreen(screen)) {

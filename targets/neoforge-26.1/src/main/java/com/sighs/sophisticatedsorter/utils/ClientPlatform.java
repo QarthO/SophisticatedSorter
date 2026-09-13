@@ -14,6 +14,14 @@ public interface ClientPlatform {
 
     boolean isPinyinEnabled();
 
+    /**
+     * Whether transferring into the player inventory fills the 27-slot main inventory before the
+     * 9-slot hotbar. Defaults to {@code true} (Sophisticated Core's order).
+     */
+    default boolean isTransferMainInventoryFirst() {
+        return true;
+    }
+
     SortBy getSortBy();
 
     void toggleSortBy();

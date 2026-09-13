@@ -21,5 +21,11 @@ public interface SortBackend<P, S, I> {
 
     void quickMove(P player, int slotIndex);
 
+    /**
+     * Moves the stack in the given slot into the player's inventory, choosing whether the main
+     * inventory (27 slots) or the hotbar (9 slots) is filled first. Returns whether anything moved.
+     */
+    boolean moveIntoPlayerInventory(P player, int slotIndex, boolean mainInventoryFirst);
+
     void broadcastChanges(P player);
 }

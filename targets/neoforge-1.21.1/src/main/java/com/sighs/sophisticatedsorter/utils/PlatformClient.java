@@ -39,6 +39,11 @@ public final class PlatformClient implements ClientPlatform {
     }
 
     @Override
+    public boolean isTransferMainInventoryFirst() {
+        return Config.TRANSFER_MAIN_INVENTORY_FIRST.get();
+    }
+
+    @Override
     public SortBy getSortBy() {
         return SortBy.fromName(Config.SORT_BY.get());
     }

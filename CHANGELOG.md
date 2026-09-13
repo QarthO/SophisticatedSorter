@@ -1,5 +1,53 @@
 # Changelog
 
+## [unreleased]
+
+- **Fabric: fixed item loss when sorting several identical max-stack-1 items** (reported with iron
+  axes / iron leggings / stone shovels: a whole chest of them collapsed to a single item). The
+  `InventorySorter` mixin that caps each slot's stack limit at the item's own limit embedded a
+  vanilla type in its injection target but was compiled with `remap = false`. Fabric production
+  runtimes use intermediary names (`class_1799`), so the injector was never found there: the sorter
+  kept using the container's 64-per-slot limit, merged e.g. five axes into one "stack of 5", and the
+  container truncated it back to one on write-back — the rest were destroyed. The injector target is
+  now remapped (`@At(remap = true)`, keeping the Core method itself unremapped), and the built
+  refmap maps `ItemStack` to `class_1799` so the hook actually applies. Forge/NeoForge keep official
+  class names and were unaffected.
+- **Sort results are now validated before being written back.** Besides the pre-existing "no item
+  lost" check (per-item totals unchanged), no result stack may exceed what the input legitimately
+  allowed for that item; an oversized stack (exactly the corruption above, which a container would
+  truncate) makes the sort keep the originals instead. A legitimate pre-existing oversized stack
+  still passes.
+- **New config `transferMainInventoryFirst` (default `true`).** When transferring container items
+  into the player inventory, the mod now fills the 27-slot main inventory before the 9-slot hotbar,
+  matching Sophisticated Core's own transfer. Set it to `false` for the old vanilla quick-move order
+  (hotbar first). The choice travels with the transfer request, so client and server agree. Applies to
+  all targets.
+- **The whole mod is now inert on Sophisticated Backpacks / Sophisticated Storage screens.**
+  Those screens keep their own sort/transfer handling (including the no-sort "ignored" slots and
+  memory slots), so the sorter no longer triggers its own sort on them from any entry point:
+  - Their main screens extend Core's `StorageScreenBase` and their settings screens extend
+    `SettingsScreen`; all client entry points (sort key, sort/transfer buttons, the settings gear,
+    the disable toggle, slot-highlight decoration and even the search-box tooltip hint) now bail
+    out on both.
+  - Server-side guard: `CoreUtils.executeSort` / `executeTransfer` skip any open
+    `StorageContainerMenuBase` / `SettingsContainerMenu`, so even a mismatched or third-party
+    client cannot make the sorter touch a Sophisticated container.
+- **Fixed item loss ("swallowing" items) when sorting a high-stack inventory.** The generic sort
+  feeds stacks through Core's `InventorySorter`, which places items back at the *vanilla* 64-per-slot
+  limit; a high-stack item (from a stack upgrade) then needs many slots, and Core silently drops the
+  overflow when there are not enough. The sort result is now verified against the per-item totals
+  taken before the sort and is discarded when anything would be lost, so sorting can never destroy
+  items. Applies to the shared backend and the 26.1 adapter.
+- Fixed the sort/disable keys doing anything at all on a Sophisticated screen, which previously made
+  the key open-sort behave like "sort the player inventory".
+
+> Note: the two entries above and the first two entries of this release are the fixes for the
+> "sorting swallows items / only one item left" reports. The root causes were distinct:
+> 1. **Fabric only** — a mixin lost its obfuscation mapping in production, so max-stack-1 items were
+>    merged into one invalid stack and truncated (iron axes / leggings / shovels all reduced to one).
+> 2. **All targets** — the generic sort could not represent high-stack items (stack upgrades) or
+>    items that needed more slots than were free, and the overflow was dropped.
+
 ## [1.1.0-hotfix]
 
 - Forge 1.20.1: fixed a production startup crash. The forge mixin config now declares its

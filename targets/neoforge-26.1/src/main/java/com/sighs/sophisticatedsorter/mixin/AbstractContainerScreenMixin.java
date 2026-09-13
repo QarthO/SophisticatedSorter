@@ -1,13 +1,13 @@
 package com.sighs.sophisticatedsorter.mixin;
 
 import com.sighs.sophisticatedsorter.event.ScreenInit;
+import com.sighs.sophisticatedsorter.utils.ClientUtils;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.world.inventory.Slot;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.TextBox;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,7 +43,7 @@ public abstract class AbstractContainerScreenMixin {
             net.minecraft.client.input.MouseButtonEvent event, boolean isKeyboardClick,
             CallbackInfoReturnable<Boolean> cir) {
         AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
-        if (screen instanceof CreativeModeInventoryScreen || screen instanceof StorageScreenBase<?>) {
+        if (screen instanceof CreativeModeInventoryScreen || ClientUtils.isSophisticatedScreen(screen)) {
             return;
         }
         GuiEventListener focused = ((Screen) (Object) this).getFocused();

@@ -23,7 +23,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.Config;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.SortButtonsPosition;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.Button;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ButtonDefinitions;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.TextBox;
@@ -89,7 +88,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         boolean validScreen = ClientUtils.isValidScreen();
         boolean inventoryScreen = Minecraft.getInstance().screen instanceof InventoryScreen;
         if (!behavior.initialize((Object) this instanceof CreativeModeInventoryScreen, validScreen,
-                inventoryScreen, (Object) this instanceof StorageScreenBase)) {
+                inventoryScreen, ClientUtils.isSophisticatedScreen(this))) {
             return;
         }
 
@@ -259,7 +258,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     private void beginGroupDrag(double mouseX, double mouseY, int button,
                                 CallbackInfoReturnable<Boolean> cir) {
         if (button != 1 || !behavior.shouldHandleClick((Object) this instanceof CreativeModeInventoryScreen,
-                (Object) this instanceof StorageScreenBase<?>)) {
+                ClientUtils.isSophisticatedScreen(this))) {
             return;
         }
         if (isOverSortGroup(mouseX, mouseY)) {
@@ -330,7 +329,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     @Inject(method = "mouseClicked", at = @At("RETURN"))
     private void clearSearchFocus(double x, double y, int button, CallbackInfoReturnable<Boolean> cir) {
         if (!behavior.shouldHandleClick((Object) this instanceof CreativeModeInventoryScreen,
-                (Object) this instanceof StorageScreenBase<?>)) {
+                ClientUtils.isSophisticatedScreen(this))) {
             return;
         }
         if (getFocused() instanceof TextBox && !getFocused().isMouseOver(x, y)) {

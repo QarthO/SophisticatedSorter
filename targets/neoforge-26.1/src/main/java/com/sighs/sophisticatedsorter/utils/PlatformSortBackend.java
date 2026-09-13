@@ -1,5 +1,6 @@
 package com.sighs.sophisticatedsorter.utils;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 
@@ -20,6 +21,10 @@ public final class PlatformSortBackend implements SortPlatform {
     @Override
     public void sortStacks(List<ItemStack> stacks,
                            Comparator<Map.Entry<ItemStackKey, Integer>> comparator) {
+        // Sorting must be a permutation. This adapter splits each item back out into vanilla-sized
+        // stacks, so a high-stack item needs many slots; when the list is too short the overflow
+        // would be dropped. Verify the per-item totals and keep the originals when anything was lost.
+        Map<Item, Integer> before = totals(stacks);
         Map<ItemStackKey, Integer> counts = new LinkedHashMap<>();
         for (ItemStack stack : stacks) {
             if (!stack.isEmpty()) {
@@ -41,8 +46,22 @@ public final class PlatformSortBackend implements SortPlatform {
         while (result.size() < stacks.size()) {
             result.add(ItemStack.EMPTY);
         }
+        if (!before.equals(totals(result))) {
+            return;
+        }
         for (int i = 0; i < stacks.size(); i++) {
             stacks.set(i, result.get(i));
         }
+    }
+
+    /** Per-item totals of the given stacks, used to detect a sort that would lose items. */
+    private static Map<Item, Integer> totals(List<ItemStack> stacks) {
+        Map<Item, Integer> totals = new LinkedHashMap<>();
+        for (ItemStack stack : stacks) {
+            if (!stack.isEmpty()) {
+                totals.merge(stack.getItem(), stack.getCount(), Integer::sum);
+            }
+        }
+        return totals;
     }
 }

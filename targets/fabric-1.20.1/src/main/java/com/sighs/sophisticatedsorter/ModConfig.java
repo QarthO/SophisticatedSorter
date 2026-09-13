@@ -32,6 +32,9 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean PINYIN = true;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean TRANSFER_MAIN_INVENTORY_FIRST = true;
+
     public static void register() {
         AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
         INSTANCE = AutoConfig.getConfigHolder(ModConfig.class).getConfig();

@@ -11,29 +11,33 @@ import java.util.function.Supplier;
 public class ServerTransferPacket {
     private final boolean transferToContainer;
     private final boolean filter;
+    private final boolean mainInventoryFirst;
 
-    public ServerTransferPacket(boolean transferToContainer, boolean filter) {
+    public ServerTransferPacket(boolean transferToContainer, boolean filter, boolean mainInventoryFirst) {
         this.transferToContainer = transferToContainer;
         this.filter = filter;
+        this.mainInventoryFirst = mainInventoryFirst;
     }
 
     public ServerTransferPacket(TransferRequest request) {
-        this(request.toContainer(), request.filterByDestination());
+        this(request.toContainer(), request.filterByDestination(), request.mainInventoryFirst());
     }
 
     public static void encode(ServerTransferPacket msg, FriendlyByteBuf buffer) {
         buffer.writeBoolean(msg.transferToContainer);
         buffer.writeBoolean(msg.filter);
+        buffer.writeBoolean(msg.mainInventoryFirst);
     }
 
     public static ServerTransferPacket decode(FriendlyByteBuf buffer) {
-        return new ServerTransferPacket(buffer.readBoolean(), buffer.readBoolean());
+        return new ServerTransferPacket(buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean());
     }
 
     public static void handle(ServerTransferPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
-            if (player != null) ForgeSorterCommands.INSTANCE.transfer(player, new TransferRequest(msg.transferToContainer, msg.filter));
+            if (player != null) ForgeSorterCommands.INSTANCE.transfer(player,
+                    new TransferRequest(msg.transferToContainer, msg.filter, msg.mainInventoryFirst));
         });
         ctx.get().setPacketHandled(true);
     }

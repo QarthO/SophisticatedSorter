@@ -24,6 +24,7 @@ public class KeyInput {
     public static void sort(InputEvent.MouseButton.Post event) {
         if (event.getAction() != InputConstants.PRESS) return;
         if (Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen) {
+            if (ClientUtils.isSophisticatedScreen(screen)) return;
             if (event.getButton() == ModKeybindings.SORT_KEY.getKey().getValue()) {
                 ClientUtils.serverSort();
             }
@@ -33,6 +34,7 @@ public class KeyInput {
     public static void sort(InputEvent.Key event) {
         if (event.getAction() != InputConstants.PRESS) return;
         if (Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen) {
+            if (ClientUtils.isSophisticatedScreen(screen)) return;
             if (event.getKey() == ModKeybindings.SORT_KEY.getKey().getValue()) {
                 ClientUtils.serverSort();
             }
@@ -44,6 +46,7 @@ public class KeyInput {
         if (event.getAction() != InputConstants.PRESS) return;
         Screen screen = Minecraft.getInstance().screen;
         if (screen instanceof AbstractContainerScreen<?>) {
+            if (ClientUtils.isSophisticatedScreen(screen)) return;
             if (event.getKey() == ModKeybindings.DISABLE_KEY.getKey().getValue()) {
                 try {
                     List<String> list = new ArrayList<>(Config.BLACKLIST.get());
