@@ -1,6 +1,7 @@
 package com.sighs.sophisticatedsorter;
 
 import com.mojang.logging.LogUtils;
+import com.sighs.sophisticatedsorter.common.CorePrerequisite;
 import com.sighs.sophisticatedsorter.network.NetworkHandler;
 import com.sighs.sophisticatedsorter.settings.ContainerSettingsTracker;
 import com.sighs.sophisticatedsorter.settings.ModMenus;
@@ -16,6 +17,7 @@ public class SophisticatedSorter implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        CorePrerequisite.requireCore();
         CoreUtils.installPlatform(PlatformSortBackend.INSTANCE);
         ModConfig.register();
         Config.register();

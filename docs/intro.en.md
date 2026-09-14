@@ -3,6 +3,9 @@
 Sophisticated Sorter extends the container sorting (and related) features that come with the Sophisticated
 series so they work on the player inventory and on every usable container.
 
+> **Prerequisite: Sophisticated Core is required.** This mod is an extension of Sophisticated Core and
+> cannot run without it. Install the Sophisticated Core build matching your Minecraft version.
+
 ## Main Features
 
 ### Sort Button Extension

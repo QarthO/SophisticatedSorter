@@ -33,6 +33,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import com.sighs.sophisticatedsorter.settings.ContainerMemorySlotGuard;
 import com.sighs.sophisticatedsorter.settings.ModMenus;
 import com.sighs.sophisticatedsorter.settings.ContainerSettingsTracker;
+import com.sighs.sophisticatedsorter.common.CorePrerequisite;
 import com.sighs.sophisticatedsorter.utils.CoreUtils;
 import com.sighs.sophisticatedsorter.utils.PlatformSortBackend;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ public class SophisticatedSorter {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public SophisticatedSorter(IEventBus modEventBus, ModContainer modContainer) {
+        CorePrerequisite.requireCore();
         CoreUtils.installPlatform(PlatformSortBackend.INSTANCE);
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);

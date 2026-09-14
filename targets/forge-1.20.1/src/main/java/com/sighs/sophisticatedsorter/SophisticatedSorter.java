@@ -1,5 +1,6 @@
 package com.sighs.sophisticatedsorter;
 
+import com.sighs.sophisticatedsorter.common.CorePrerequisite;
 import com.sighs.sophisticatedsorter.network.NetworkHandler;
 import com.sighs.sophisticatedsorter.settings.ContainerMemorySlotGuard;
 import com.sighs.sophisticatedsorter.settings.ContainerSettingsTracker;
@@ -21,6 +22,7 @@ public class SophisticatedSorter {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public SophisticatedSorter() {
+        CorePrerequisite.requireCore();
         CoreUtils.installPlatform(PlatformSortBackend.INSTANCE);
         NetworkHandler.register();
         ModMenus.register(FMLJavaModLoadingContext.get().getModEventBus());

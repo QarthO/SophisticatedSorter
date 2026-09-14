@@ -4,6 +4,9 @@ Allows the built-in sorting functionality from Sophisticated Core to work on the
 
 This mod does not try to invent a brand-new sorting system. It simply extends the existing Sophisticated Core sorting entry points to more screens.
 
+> **Prerequisite: Sophisticated Core is required.**
+> This mod is an extension of Sophisticated Core and cannot run without it. Install the Sophisticated Core build matching your Minecraft version alongside this mod. The mod metadata declares it as a required dependency, so a normal launcher refuses to start when it is missing; if startup fails with an obscure cause (for example stuck on the loading screen, with only a Mixin line or a `NoClassDefFoundError` in the log), first check that Sophisticated Core is installed and version-matched.
+
 ### Supported Targets
 
 | Loader | Minecraft | Java |

@@ -4,6 +4,9 @@
 
 本模组本身并不重新实现一套新的整理系统，而是把精妙核心已有的整理入口扩展到更多界面中。
 
+> **前置模组：必须安装 Sophisticated Core（精妙核心）。**
+> 本模组是精妙核心的扩展，没有它无法运行。请在安装本模组的同时安装与你的 Minecraft 版本匹配的 Sophisticated Core。模组元数据已将其声明为必需依赖，正常启动器会在缺失时拒绝加载；若启动失败且原因不明（例如卡在加载界面、日志里只有一句 Mixin 或 `NoClassDefFoundError`），请先确认 Sophisticated Core 是否已安装且版本匹配。
+
 ### 支持的 Target
 
 | 加载器 | Minecraft | Java |

@@ -1,7 +1,15 @@
 # Changelog
 
-## [unreleased]
+## [1.1.1]
 
+Fixes for the item-loss reports and for the mod being active where it should not be.
+
+- **Clearer failure when the Sophisticated Core prerequisite is missing.** Every entry point now probes
+  for Core before touching any Core-referencing class and aborts with an explicit message naming
+  `sophisticatedcore`, instead of dying inside class initialisation with a bare `NoClassDefFoundError`
+  (which some launchers surface only as a generic "mod loading failed", with no usable cause). All
+  targets already declare Core in their mod metadata, so a normal loader still blocks the start first.
+  Documentation (README / docs) now states the prerequisite explicitly.
 - **Fabric: fixed item loss when sorting several identical max-stack-1 items** (reported with iron
   axes / iron leggings / stone shovels: a whole chest of them collapsed to a single item). The
   `InventorySorter` mixin that caps each slot's stack limit at the item's own limit embedded a
