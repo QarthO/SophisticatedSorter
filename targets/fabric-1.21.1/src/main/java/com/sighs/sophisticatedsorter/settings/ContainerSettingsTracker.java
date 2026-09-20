@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import com.sighs.sophisticatedsorter.network.ClientboundContainerSettingsPayload;
 import com.sighs.sophisticatedsorter.network.ClientboundTrackedContainerKeyPayload;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import com.sighs.sophisticatedsorter.network.OptionalClientSupport;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
@@ -100,6 +100,10 @@ public final class ContainerSettingsTracker {
 	 * authoritative settings contents to the client.
 	 */
 	public void onContainerOpened(ServerPlayer serverPlayer) {
+		if (!OptionalClientSupport.supportsSorter(serverPlayer)) {
+			untrack(serverPlayer);
+			return;
+		}
 		AbstractContainerMenu menu = serverPlayer.containerMenu;
 		ContainerSettingsKey key = ContainerSettingsKeyResolver.resolveKey(serverPlayer, menu);
 		if (key != null) {
@@ -108,11 +112,11 @@ public final class ContainerSettingsTracker {
 		// Tell the client which container it just opened so vanilla screens can render slot highlights
 		// (the client cannot resolve the key itself - its menu slots wrap a SimpleContainer), and push
 		// the authoritative settings contents so the highlights/memory ghosts have data.
-		ServerPlayNetworking.send(serverPlayer, new ClientboundTrackedContainerKeyPayload(key));
+		OptionalClientSupport.sendIfSupported(serverPlayer, new ClientboundTrackedContainerKeyPayload(key));
 		if (key != null && !key.isPlayerInventory()) {
 			ServerContainerSettingsStore store = ServerContainerSettingsStore.get();
 			if (store != null) {
-				ServerPlayNetworking.send(serverPlayer,
+				OptionalClientSupport.sendIfSupported(serverPlayer,
 						new ClientboundContainerSettingsPayload(key, store.getContents(key)));
 			}
 		}
@@ -121,6 +125,6 @@ public final class ContainerSettingsTracker {
 	/** Clears the record when the player's menu is removed server-side (ESC, death, ...). */
 	public void onContainerClosed(ServerPlayer serverPlayer) {
 		untrack(serverPlayer);
-		ServerPlayNetworking.send(serverPlayer, new ClientboundTrackedContainerKeyPayload(null));
+		OptionalClientSupport.sendIfSupported(serverPlayer, new ClientboundTrackedContainerKeyPayload(null));
 	}
 }

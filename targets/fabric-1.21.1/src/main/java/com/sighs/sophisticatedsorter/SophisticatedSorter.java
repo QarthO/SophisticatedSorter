@@ -3,6 +3,7 @@ package com.sighs.sophisticatedsorter;
 import com.mojang.logging.LogUtils;
 import com.sighs.sophisticatedsorter.common.CorePrerequisite;
 import com.sighs.sophisticatedsorter.network.NetworkHandler;
+import com.sighs.sophisticatedsorter.network.OptionalClientRegistrySync;
 import com.sighs.sophisticatedsorter.settings.ContainerSettingsTracker;
 import com.sighs.sophisticatedsorter.settings.ModMenus;
 import com.sighs.sophisticatedsorter.settings.ServerContainerSettingsStore;
@@ -24,5 +25,6 @@ public class SophisticatedSorter implements ModInitializer {
         ServerContainerSettingsStore.registerLifecycleHandlers();
         ContainerSettingsTracker.registerDisconnectHandlers();
         NetworkHandler.register();
+        OptionalClientRegistrySync.register();
     }
 }

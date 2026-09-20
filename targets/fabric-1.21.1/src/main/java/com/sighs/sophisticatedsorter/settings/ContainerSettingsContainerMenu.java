@@ -1,7 +1,7 @@
 package com.sighs.sophisticatedsorter.settings;
 
 import com.sighs.sophisticatedsorter.client.settings.ClientContainerSettingsCache;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import com.sighs.sophisticatedsorter.network.OptionalClientSupport;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -85,7 +85,7 @@ public class ContainerSettingsContainerMenu extends SettingsContainerMenu<Contai
 			net.minecraft.nbt.CompoundTag current = serverStore.getContents(key);
 			if (lastContentsNbt == null || !lastContentsNbt.equals(current)) {
 				lastContentsNbt = current == null ? null : current.copy();
-				ServerPlayNetworking.send(serverPlayer,
+				OptionalClientSupport.sendIfSupported(serverPlayer,
 						new com.sighs.sophisticatedsorter.network.ClientboundContainerSettingsPayload(key, current));
 			}
 		}

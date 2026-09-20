@@ -1,3 +1,5 @@
+> **Server fork (Fabric 1.21.1):** Supports stock upstream 1.1.1 clients and clients without Sorter. See [installation, behavior and testing](docs/optional-clients-fabric-1.21.1.md).
+
 ## 精妙整理
 
 使精妙核心自带的整理功能可以作用于玩家物品栏和更多普通容器，让常用界面里的整理方式尽量统一。

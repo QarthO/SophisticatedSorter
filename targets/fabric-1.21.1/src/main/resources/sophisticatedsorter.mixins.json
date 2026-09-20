@@ -13,7 +13,8 @@
     "ContainerMemorySlotMixin",
     "ServerContainerClickMixin",
     "ServerPlayerOpenMenuMixin",
-    "ContainerMenuRemovedMixin"
+    "ContainerMenuRemovedMixin",
+    "OptionalClientRegistrySyncMixin"
   ],
   "client": [
     "AbstractContainerScreenMixin",

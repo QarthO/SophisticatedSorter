@@ -54,7 +54,7 @@ public record ClientOpenContainerSettingsPayload(ContainerSettingsKey key) imple
 				return;
 			}
 			ContainerSettingsKey key = payload.key() != null ? payload.key() : ContainerSettingsTracker.get().getOpenKey(serverPlayer);
-			if (key != null) {
+			if (key != null && OptionalClientSupport.supportsSorter(serverPlayer)) {
 				ContainerOpenFlow.openSettings(serverPlayer, key);
 			}
 		});
