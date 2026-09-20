@@ -1,6 +1,7 @@
 package com.sighs.sophisticatedsorter.settings;
 
 import net.minecraft.server.level.ServerPlayer;
+import com.sighs.sophisticatedsorter.network.OptionalClientSupport;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -70,6 +71,10 @@ public final class ContainerMemorySlotGuard {
 	 * ran) self-heals on the next click.
 	 */
 	public static void arm(ServerPlayer player) {
+		if (!OptionalClientSupport.supportsSorter(player)) {
+			disarm();
+			return;
+		}
 		ContainerMemorySlotGuard guard = GUARD.get();
 		guard.armed = 1;
 		guard.player = player;
